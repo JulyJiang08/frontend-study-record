@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件component-2父传子</title>
+    <script src="vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <bbar thename='主页' :show='false'></bbar>
+        <bbar thename='简介' :show='true'></bbar>
+        <bbar thename='产品' :show='true'></bbar>
+        <br>
+        ------------------------------------------
+        <br>
+        <br>
+        <bbar :thename='p_name' :show='false'></bbar>
+        <br>
+    </div>
+    <script>
+        Vue.component(
+            'bbar',
+            {
+                template:
+                `<div>
+                    >>>
+                    <button v-if='show' @click='c'>首页</button>
+                    【root的child组件：bbar组件】【{{thename}}】
+                </div>`,
+                props:  //接受父组件传进来的属性
+                {
+                    thename:String,
+                    show:Boolean,
+                },
+                methods:{
+                    c:function(){
+                        alert("首页");
+                    }
+                }
+            }
+        );
+        var vm = new Vue({
+            el:"#app",
+            data:{
+                p_name:'root组件的p_name属性'
+            }
+        })
+    </script>
+
+    <div id="app-2">
+        <blog-post title="My journey with Vue"></blog-post>
+        <blog-post title="Blogging with Vue"></blog-post>
+        <blog-post title="Why Vue is so fun"></blog-post>
+    </div>
+    <script>
+        Vue.component('blog-post', {
+            props: ['title'],  //在组件上注册的自定义attribute
+            template: '<h3>{{ title }}</h3>'
+        })
+        var vm2 = new Vue({
+            el:"#app-2",
+        })
+    </script>
+
+    <div id="app-3">
+        <!-- 为每篇博文渲染一个组件 -->
+        <blog-post
+            v-for="post in posts"
+            :key="post.id"   
+            :title="post.title"
+        ></blog-post>
+        <!-- v-bind动态传递prop -->
+    </div>
+    <script>
+        var vm3 = new Vue({
+            el:"#app-3",
+            data:{
+                posts: [
+                    { id: 1, title: 'My journey with Vue' },
+                    { id: 2, title: 'Blogging with Vue' },
+                    { id: 3, title: 'Why Vue is so fun' }
+                ]
+            }
+        })
+    </script>
+
+    <div id="app-4">
+        <blog-post-2
+        v-for="post in posts"
+        v-bind:key="post.id"
+        v-bind:post="post"
+        ></blog-post-2>
+    </div>
+    <script>
+        Vue.component(
+            'blog-post-2',
+             {
+                props: ['post'],
+                template: `
+                    <div class="blog-post">
+                    <h3>{{ post.title }}</h3>
+                    <div v-html="post.content"></div>
+                    </div>
+                `
+            }
+        )
+        var vm4 = new Vue({
+            el:"#app-4",
+            data:{
+                posts:[
+                    {id:1,
+                    title: 'My journey with Vue',
+                    content:"<p>This is a post.</p>"}
+                ]
+            }
+        })
+    </script>
+</body>
+</html>

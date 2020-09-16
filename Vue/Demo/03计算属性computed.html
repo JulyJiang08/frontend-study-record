@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算属性Computed</title>
+    <script src="vue.js"></script>
+</head>
+<body>
+    <div id="app-1">
+        <p> time1: {{time1()}} </p>   
+        <!--调用方法-->
+        <p> time2: {{time2}} </p>
+        <!--调用属性不要加()-->
+    </div>
+    <script>
+        var vm1 = new Vue({
+            el:"#app-1",
+            data:{
+                msg:"Hello,computed!"
+            },
+            methods:{
+                time1:function(){
+                    return Date.now();
+                }
+            },
+            computed:{
+                // 计算结果保存在内存中，重复调用不变，类似缓存
+                // 不与methods中方法重名
+                time2:function(){
+                    this.msg;  // msg被赋予新值后，Date.now()会重新计算
+                    return Date.now();
+                }
+            }
+        })
+    </script>
+
+    <div id="app-2">
+        <input type="text" v-model="inputing">
+        <ul>
+            <li v-for="d in myList">
+            <!-- <li v-for="d in myList()"> -->
+                {{ d }}
+            </li>
+        </ul>
+    </div>
+    <script>
+        var vm2 = new Vue({
+            el:"#app-2",
+            data:{
+                inputing:'',
+                list:["身份证","户口本","银行卡","社保卡","健康卡"]
+            },
+            computed:{
+                myList:function(){
+                    return this.list.filter  
+                    (
+                        item=>
+                        item.indexOf(this.inputing)>-1
+                    )
+                    // filter()创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素
+                    // 不改变原始数组，不检测空数组
+                    // indexOf()返回某个指定的字符串值在字符串中指定出现的位置
+                    // 如果要检索的字符串值没有出现，则改方法返回-1
+                }
+            },
+            // methods:{
+            //     myList:function(){
+            //         return this.list.filter  
+            //         (
+            //             item=>
+            //             item.indexOf(this.inputing)>-1
+            //         )
+            //     }
+            // }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件component-1</title>
+    <script src="vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <button-counter></button-counter>
+        <br>
+        <br>
+        <blog-post title="My journey with Vue"></blog-post>
+        <blog-post title="Blogging with Vue"></blog-post>
+        <blog-post title="Why Vue is so fun"></blog-post>
+        <br>
+        <br>
+        <abar></abar>
+        <br>
+        <bbar></bbar>
+        <br>
+        <button-counter></button-counter>
+    </div>
+    <script>
+        //全局定义，注册组件
+        Vue.component(
+            'button-counter', 
+            {
+                data: function () 
+                {
+                    return {count: 0}
+                },
+                template: 
+                '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+        })
+
+        Vue.component('blog-post', {
+            props: ['title'],
+            template: '<h3>{{ title }}</h3>'
+        })
+
+        Vue.component(
+            'abar',  //组件名
+            {
+                template:  //模板，写HTML代码
+                `<div style="background:yellow">
+                    【公共root组件的child组件：abar组件】
+                    <button @click='ccc'>确定</button>
+                    <child></child>  
+                    <abar_child></abar_child>
+                </div>`,  
+                // 只有一个根节点div
+                // 全局组件可被同级组件当作子组件
+                // 样式要单文件组件的写法才可实现
+
+                data()  //【注意是方法，不是属性】
+                {
+                    return {abarname:"abarname"}
+                },
+
+                methods:
+                {
+                    ccc:function(){
+                        alert("abar");
+                    }
+                },
+
+                components:  //局部定义，注册组件【后面有s】
+                {
+                    abar_child:  //与父组件名写法的区别
+                    {
+                        template:`<div><b>【abar_child组件，只能在abar组件中使用】</b></div>`
+                    }
+                }
+            }
+        )
+        
+        Vue.component(
+            'bbar',
+            {
+                template:
+                `<div style="background:blue">
+                    【与aabar同级兄弟组件：bbar组件】
+                    <child></child>
+                </div>`
+            }
+
+        )
+
+        Vue.component(
+            'child',
+            {
+                template:`<div><font color=red>【公共的child组件】</font></div>`
+            }
+        )
+
+        var vm = new Vue({
+            el:"#app"
+        })
+    </script>
+</body>
+</html>

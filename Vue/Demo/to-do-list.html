@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do-List</title>
+    <script src="vue.js"></script>   
+</head>
+<body>
+    <div id="app">
+        <div id="input">
+            <input type="text" v-model="itemNew" @keyup.enter='add'>
+        </div>        
+        <div>
+            <div id="to-do-item">
+                <to-do-item
+                v-for="(todo,index) in todos"
+                :key="todo.index"
+                :item="todo.item"
+                :index="todo.index"
+                @left-num-change="leftNumChange"
+                @delete="handledelete"
+                @del-num-change="delNumChange"
+                ></to-do-item>
+            </div>
+            <div id="foot" >
+                <div id="left" >
+                    <span > {{num}} 剩余</span>                   
+                </div>
+                <div id="clean">
+                    <button @click="clean">清空</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        Vue.component(
+            'to-do-item',
+            {
+                props:['item','index'],
+                data()
+                {
+                    return{isFinish:false}
+                },
+                template:
+                `<div>
+                    <span :class={finish:isFinish} @click='change'> {{index}} {{item}} </span>
+                    <button @click='del'>删除</button>
+                </div>`,
+                methods:{      
+                    //完成状态改变              
+                    change:function(){   
+                        this.$emit('left-num-change',!this.isFinish);
+                        this.isFinish = !this.isFinish;
+                    },
+                    //删除
+                    del:function(){
+                        this.$emit('delete',this.index);
+                        console.log(this.index);
+                        this.$emit('del-num-change',this.isFinish);                  
+                    },
+                },
+            }
+        )
+        var vm = new Vue({
+            el:"#app",
+            data:{
+                todos:[
+                    {item:'待办事项'}
+                ],
+                itemNew:'',
+                num:1
+            },
+            methods:{
+                //添加
+                add:function(){
+                    this.todos.push({
+                        item : this.itemNew,  //是【:】，不是【=】!!!                       
+                        });
+                    this.num +=1 ;  //this关键字！
+                    this.itemNew = '';
+                },
+                //待办数量变化
+                leftNumChange:function(finishStatus){
+                    if(finishStatus){
+                        this.num -= 1;
+                    }else{
+                        this.num +=1;
+                    }
+                },
+                //清空
+                clean:function(){
+                    if(this.num>0){
+                        this.todos.splice(0,this.todos.length);
+                        this.num = 0;
+                    }
+                },
+                //删除
+                handledelete:function(index){
+                    console.log(index);
+                    this.todos.splice(index,1);        
+                },
+                //删除时判断剩余待办数量是否发生变化
+                delNumChange:function(finishStatus){
+                    if(!finishStatus){
+                        this.num--;
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+<style>
+    div.app{
+        position: center;
+        text-align: center;
+        margin-top: 60px
+    }
+    .finish{
+        text-decoration:line-through;
+        color: gray;
+    }
+</style>
+</html>
